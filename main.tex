@@ -1,0 +1,180 @@
+\documentclass[10pt,aspectratio=169]{beamer}
+\usepackage{pgfpages}
+
+% ---------------- Support for notes ------------------------------
+% Add an empty note to every slide
+% https://tex.stackexchange.com/questions/11708/run-macro-on-each-frame-in-beamer
+% \setbeameroption{hide notes} % Only slides (default)
+% \setbeameroption{show only notes} % Only notes
+% \setbeameroption{show notes on second screen=right} % Both
+\makeatletter
+\def\beamer@framenotesbegin{% at beginning of slide
+  \gdef\beamer@noteitems{}%
+  \gdef\beamer@notes{{}}% used to be totally empty.
+}
+\makeatother
+% Now, use a pdf reader able to read this:
+% -----------------------------------------------------------------
+% iOS: Skim: https://gist.github.com/andrejbauer/ac361549ac2186be0cdb
+% 1. Generate just the presentation (hide notes) and save to slides.pdf
+% 2. Generate onlt the notes (show only nodes) and save to notes.pdf
+% 3. With Skim open both slides.pdf and notes.pdf
+% 4. Click on slides.pdf to bring it to front.
+% 5. In Skim, under "View -> Presentation Option -> Synhcronized Noted Document"
+%    select notes.pdf.
+% 6. Now as you move around in slides.pdf the notes.pdf file will follow you.
+% 7. Arrange windows so that notes.pdf is in full screen mode on your laptop
+%    and slides.pdf is in presentation mode on the projector.
+% -----------------------------------------------------------------
+% Linux: pdfpc: https://tex.stackexchange.com/questions/84622/is-there-a-specialized-pdf-viewer-for-latex-beamer-presentations-on-linux
+% example: pdfpc main.pdf --notes=right
+% ---------------- End support for notes --------------------------
+
+\graphicspath{{./figures/}{./logos/}}
+\usetheme[progressbar=frametitle, sectionpage=none]{metropolis}
+\usepackage{appendixnumberbeamer}
+\usepackage{siunitx}
+\usepackage{framed}
+\usepackage{color}
+\usepackage{hyperref}
+\input{xincludegraphics.tex}
+\hypersetup{
+colorlinks, urlcolor=blue, linkcolor={blue!10!black},
+%citecolor={blue!50!black}
+}
+%
+% metropolis theme: https://github.com/matze/mtheme
+%
+\mode<presentation>
+{
+  \usetheme{metropolis}      % or try Darmstadt, Madrid, Warsaw, ...
+  %\usecolortheme{default} % or try albatross, beaver, crane, ...
+  %\usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+\definecolor{kitwaregray}{HTML}{686868}
+\definecolor{kitwarelightgray}{HTML}{EEEEEE}
+\definecolor{kitwareblue}{HTML}{005F9E}
+\definecolor{kitwaregreen}{HTML}{009D49}
+\definecolor{kitwarewhite}{HTML}{FFFFFF}
+\definecolor{kitwareblack}{HTML}{000000}
+\definecolor{shadecolor}{HTML}{EEEEEE}
+
+\setbeamercolor{progress bar}{fg=kitwaregreen}
+% Theme colors are derived from these two elements
+%\setbeamercolor{alerted text}{fg=}
+\setbeamercolor{frametitle}{bg=kitwareblue}
+\setbeamercolor{footline}{bg=kitwaregreen}
+\setbeamerfont{frame numbering}{size=\small}
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\textwidth, sep=1ex]{footline}%
+    %\usebeamerfont{page number in head/foot}%
+    \usebeamertemplate*{frame footer}
+    \hfill%
+    \usebeamertemplate*{frame numbering}
+  \end{beamercolorbox}%
+}
+% At the logo on top of the footline.
+\addtobeamertemplate{footline}{\hfill\includegraphics[height=0.45cm]{klogo_new_crop}\hspace*{0.5em}\par}{}
+%\setbeamertemplate{frame footer}{\includegraphics[width=.1\textwidth]{klogo_new_crop}}
+
+
+\title{Advanced statistical analysis to classify high dimensionality textural probability-distribution matrices}
+%\subtitle{Methods for quantitative characterization of bone injury from computed-tomography images}
+\date{\today}
+\author{Pablo Hernandez-Cerdan\textsuperscript{a}, Beatriz Paniagua\textsuperscript{a}, Jack Protero\textsuperscript{b}, J.S Marron\textsuperscript{b}, Eric Libingston\textsuperscript{c}, Ted Bateman\textsuperscript{c} and Matthew McCormick\textsuperscript{a}}
+\author{J. Prothero\textsuperscript{a}, J.B Vimort\textsuperscript{a}, A. Ruellas\textsuperscript{a}, J. S. Marron\textsuperscript{a}, M. McCormick\textsuperscript{a}, P. Hernandez-Cerdan\textsuperscript{a}, L. Cevidanes\textsuperscript{a}, E. Benavides\textsuperscript{a} and B. Paniagua\textsuperscript{a}}
+\institute{\textsuperscript{a} Kitware, Inc.\newline\textsuperscript{b} Dept. of Statistics and Operations Research, UNC\newline\textsuperscript{c} Dept. of Biomedical Engineering, UNC}
+
+\titlegraphic{
+\begin{tikzpicture}[overlay, remember picture]
+\node[at=(current page.south), anchor=south] {%
+\includegraphics[width=.3\textwidth]{klogo}\hspace{2cm} \includegraphics[width=.3\textwidth]{unclogo}
+};
+\end{tikzpicture}
+}
+% \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.pdf}}
+
+\begin{document}
+
+\maketitle
+
+% \begin{frame}{Table of contents}
+%   \setbeamertemplate{section in toc}[sections numbered]
+%   \tableofcontents[hideallsubsections]
+% \end{frame}
+
+\section{Introduction}
+
+\begin{frame}
+  \begin{columns}[onlytextwidth]
+  \column{0.5\textwidth}
+    \includegraphics[width=0.9\textwidth]{./logos/klogo.png}\\
+    \vspace{0.1cm}
+    % \metroset{block=fill}
+    \begin{block}{\color{kitwareblue} Collaborative Software R\&D}
+      \begin{itemize}%\itemsep0.2em
+        \item Algorithms \& applications
+        \item Software process \& infrastructure
+        \item Support \& training
+        \item Open source leadership
+      \end{itemize}
+    \end{block}
+    \begin{block}{\color{kitwareblue} Supporting industry, government and academia}
+    \end{block}
+  \column{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{./logos/kitware_pie.png}\\
+    \includegraphics[width=0.9\textwidth]{./logos/kitware_itk_slicer_vtk_logos.png}
+  \end{columns}
+
+  \note[item]{Intro Kitware:}
+\end{frame}
+
+\section{Materials}
+
+
+{
+\setbeamercolor{background canvas}{bg=kitwarewhite}
+\begin{frame}{Medical Computing}
+    \centering
+    \includegraphics[height=0.9\textheight]{./logos/kitware_medical.png}
+\end{frame}
+}
+
+\begin{frame}[standout]
+  \centering
+  {\huge Thanks!}\\
+  pablo.hernandez@kitware.com\\
+  kitware@kitware.com
+  \vspace{1cm}
+  % {\Huge Questions?}\\
+\end{frame}
+
+\appendix
+
+{
+\setbeamercolor{background canvas}{bg=kitwarewhite}
+\begin{frame}[fragile]{GLCM Matrices}
+  \centering
+  \includegraphics[width=0.9\textwidth]{./figures/GLCM_matrices.png}
+\end{frame}
+
+\begin{frame}[fragile]{GLRLM Matrices}
+  \centering
+  \includegraphics[width=0.9\textwidth]{./figures/GLRLM_matrices.png}
+\end{frame}
+}
+
+
+\begin{frame}[allowframebreaks]{References}
+
+  \bibliography{references}
+  \bibliographystyle{abbrv}
+
+\end{frame}
+
+
+\end{document}
+
